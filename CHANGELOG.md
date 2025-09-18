@@ -6,11 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 ### Added
-- (Planned) GitHub Actions workflow for coding standards / linting
-- (Planned) Screenshots and WordPress.org `readme.txt` format (if published to .org)
+- (Planned) Additional automation or tooling improvements
 
 ### Security
-- (Planned) Additional hardening review
+- (Planned) Further hardening review
+
+## [1.2.0] - 2025-09-18
+### Added
+- WordPress.org compatible `readme.txt`
+- Updated compatibility: WP 6.8, PHP 8.2
+
+### Changed
+- Bumped minimum WordPress requirement to 6.5
+- Bumped minimum PHP requirement to 8.2
+
+### Maintenance
+- Documentation refinements (README normalization)
 
 ## [1.1.1] - 2025-09-18
 ### Added
@@ -30,5 +41,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Adds Privacy submenu for Editors when not already exposed by core
 - Temporary request-scoped capability elevation on privacy pages
 
-[Unreleased]: https://github.com/soderlind/editor-can-manage-privacy-options/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/soderlind/editor-can-manage-privacy-options/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/soderlind/editor-can-manage-privacy-options/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/soderlind/editor-can-manage-privacy-options/compare/v1.0.0...v1.1.1

@@ -5,7 +5,7 @@ Tags: privacy, capabilities, editor, roles, permissions
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 8.2
-Stable tag: 1.1.1
+Stable tag: 1.2.0
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -54,6 +54,12 @@ Yes, but users with network-level capabilities are treated as effectively admin 
 Yes; no permanent role modifications are stored. Adjustments are request-scoped and limited to privacy pages.
 
 == Changelog ==
+= 1.2.0 =
+* Added WordPress.org `readme.txt`
+* Updated compatibility (Tested up to 6.8, PHP 8.2)
+* Raised minimum requirements (WP 6.5, PHP 8.2)
+* Documentation refinements (README cleanup)
+
 = 1.1.1 =
 * Added defensive duplicate Privacy menu cleanup
 * Added multiple CSS injection hooks for edge cases
@@ -64,6 +70,9 @@ Yes; no permanent role modifications are stored. Adjustments are request-scoped 
 * Initial release adding Editor access to Privacy Settings via capability remap
 
 == Upgrade Notice ==
+= 1.2.0 =
+Adds WordPress.org readme, updates compatibility and requirements. Update recommended.
+
 = 1.1.1 =
 Improved duplicate menu handling and refined capability checks. Update recommended.
 
