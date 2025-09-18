@@ -18,5 +18,7 @@
 	"support": {
 		"issues": "https://github.com/soderlind/editor-can-manage-privacy-options/issues"
 	},
-	"require": {}
+	"require": {
+		"yahnis-elsts/plugin-update-checker": "^5.6"
+	}
 }
