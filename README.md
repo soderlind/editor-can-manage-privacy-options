@@ -2,6 +2,9 @@
 
 A lightweight WordPress plugin that grants the **Editor** role access to manage site Privacy Settings — capabilities normally restricted to Administrators.
 
+<img src="assets/editor-can-manage-privacy-options.png" alt="Screenshot of the Privacy submenu added under Settings for Editors" style="max-width:100%;height:auto;">
+
+
 ## Why This Plugin?
 
 By default, only Administrators can configure the site's privacy policy settings (selecting the Privacy Policy page, accessing the privacy guide, etc.). This plugin safely extends that access to trusted Editors without broadly elevating their administrative capabilities.
