@@ -47,7 +47,7 @@ add_filter( 'epm_privacy_base_cap', function( $default ) {
 - **Composer Install**
 
    ```bash
-   composer require soderlind/additional-javascript
+   composer require soderlind/editor-can-manage-privacy-options
    ```
 
 - **Updates**
