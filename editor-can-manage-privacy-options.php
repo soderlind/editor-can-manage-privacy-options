@@ -4,7 +4,15 @@
  * Description: Grants WordPress Editors the ability to manage privacy settings and access privacy admin pages.
  * Version: 1.1.1
  * Author: Per Søderlind
- * Text Domain: your-text-domain
+ * Author URI: https://github.com/soderlind
+ * Plugin URI: https://github.com/soderlind/editor-can-manage-privacy-options
+ * Text Domain: editor-can-manage-privacy-options
+ * Domain Path: /languages
+ * Requires at least: 5.2
+ * Tested up to: 6.6
+ * Requires PHP: 7.4
+ * License: MIT
+ * License URI: https://opensource.org/licenses/MIT
  *
  * This plugin extends the WordPress Editor role to include privacy management capabilities,
  * which are typically reserved for Administrators only.
@@ -30,6 +38,8 @@ final class Editor_Privacy_Manager {
 	 * Initialize the plugin
 	 */
 	public static function init() {
+		// Load translations.
+		add_action( 'plugins_loaded', [ __CLASS__, 'load_textdomain' ] );
 		// Map privacy capability to editors
 		add_filter( 'map_meta_cap', [ __CLASS__, 'grant_privacy_capability' ], 10, 4 );
 
@@ -90,11 +100,18 @@ final class Editor_Privacy_Manager {
 
 		// Add privacy submenu under Settings
 		add_options_page(
-			__( 'Privacy Settings', 'your-text-domain' ), // Page title
-			__( 'Privacy', 'your-text-domain' ),          // Menu title
-			self::BASE_PRIVACY_CAP,                        // Required capability (mapped capability)
-			'options-privacy.php'                         // Menu slug (links to core privacy page)
+			__( 'Privacy Settings', 'editor-can-manage-privacy-options' ), // Page title
+			__( 'Privacy', 'editor-can-manage-privacy-options' ),          // Menu title
+			self::BASE_PRIVACY_CAP,                                        // Required capability (mapped capability)
+			'options-privacy.php'                                         // Menu slug (links to core privacy page)
 		);
+	}
+
+	/**
+	 * Load plugin text domain for translations.
+	 */
+	public static function load_textdomain() {
+		load_plugin_textdomain( 'editor-can-manage-privacy-options', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	}
 
 	/**
@@ -172,9 +189,9 @@ final class Editor_Privacy_Manager {
 		?>
 		<style id="editor-privacy-manager-css" data-epm="1">
 			/* Duplicate Privacy submenu handling:
-									 * Modern: hide entire LI containing the Privacy link and not first. Fallback hides anchor only.
-									 * :has() support: Chrome 105+, Safari 15.4+, Firefox (flagged) – fallback keeps UX acceptable.
-									 */
+											 * Modern: hide entire LI containing the Privacy link and not first. Fallback hides anchor only.
+											 * :has() support: Chrome 105+, Safari 15.4+, Firefox (flagged) – fallback keeps UX acceptable.
+											 */
 			#adminmenu .wp-submenu li:not(.wp-first-item):has(> a[href$="options-privacy.php"]) {
 				display: none !important;
 			}
