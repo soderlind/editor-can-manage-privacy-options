@@ -26,9 +26,16 @@ By default only Administrators can manage Privacy Settings (select the Privacy P
 * Translation ready (`Text Domain: editor-can-manage-privacy-options`)
 
 == Installation ==
-1. Upload the plugin folder to `/wp-content/plugins/`.
-2. Activate the plugin via Plugins → Installed Plugins.
-3. Log in as an Editor and go to Settings → Privacy.
+
+1. **Quick Install**
+
+   * Download [`editor-can-manage-privacy-options.zip`](https://github.com/soderlind/editor-can-manage-privacy-options/releases/latest/download/editor-can-manage-privacy-options.zip)
+   * Upload via  Plugins > Add New > Upload Plugin
+   * Activate the plugin.
+
+
+2. **Updates**
+   * Plugin updates are handled automatically via GitHub. No need to manually download and install updates.
 
 == Frequently Asked Questions ==
 = Does this allow Editors to change other site-wide options? =

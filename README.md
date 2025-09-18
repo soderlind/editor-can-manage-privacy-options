@@ -34,9 +34,21 @@ add_filter( 'epm_privacy_base_cap', function( $default ) {
 ```
 
 ## Installation
-1. Upload the plugin folder to `wp-content/plugins/`
-2. Activate via **Plugins → Installed Plugins**
-3. Log in as an Editor and navigate to **Settings → Privacy**
+
+- **Quick Install**
+
+   - Download [`editor-can-manage-privacy-options.zip`](https://github.com/soderlind/editor-can-manage-privacy-options/releases/latest/download/editor-can-manage-privacy-options.zip)
+   - Upload via  Plugins > Add New > Upload Plugin
+   - Activate the plugin.
+
+- **Composer Install**
+
+   ```bash
+   composer require soderlind/additional-javascript
+   ```
+
+- **Updates**
+   * Plugin updates are handled automatically via GitHub. No need to manually download and install updates.
 
 ## Requirements
 - WordPress 5.2+ (earlier versions untested)
