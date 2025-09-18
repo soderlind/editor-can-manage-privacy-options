@@ -51,8 +51,9 @@ add_filter( 'epm_privacy_base_cap', function( $default ) {
    * Plugin updates are handled automatically via GitHub. No need to manually download and install updates.
 
 ## Requirements
-- WordPress 5.2+ (earlier versions untested)
-- PHP 7.4+ recommended
+- WordPress 6.5+
+- PHP 8.2+
+
 
 ## Security Notes
 - Scope limited strictly to privacy-related pages
