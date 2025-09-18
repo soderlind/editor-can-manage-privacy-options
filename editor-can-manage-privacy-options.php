@@ -8,9 +8,9 @@
  * Plugin URI: https://github.com/soderlind/editor-can-manage-privacy-options
  * Text Domain: editor-can-manage-privacy-options
  * Domain Path: /languages
- * Requires at least: 5.2
- * Tested up to: 6.6
- * Requires PHP: 7.4
+ * Requires at least: 6.5
+ * Tested up to: 6.8
+ * Requires PHP: 8.2
  * License: MIT
  * License URI: https://opensource.org/licenses/MIT
  *
@@ -22,6 +22,24 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+// Define plugin constants
+define( 'EDITOR_PRIVACY_MANAGER_VERSION', '1.1.1' );
+define( 'EDITOR_PRIVACY_MANAGER_URL', plugin_dir_url( __FILE__ ) );
+define( 'EDITOR_PRIVACY_MANAGER_PATH', plugin_dir_path( __FILE__ ) );
+
+// Include the generic updater class
+if ( ! class_exists( 'Soderlind\WordPress\GitHub_Plugin_Updater' ) ) {
+	require_once EDITOR_PRIVACY_MANAGER_PATH . 'class-github-plugin-updater.php';
+}
+// Initialize the updater with configuration.
+$editor_privacy_manager_updater = \Soderlind\WordPress\GitHub_Plugin_Updater::create_with_assets(
+	'https://github.com/soderlind/editor-can-manage-privacy-options',
+	EDITOR_PRIVACY_MANAGER_PATH . 'editor-can-manage-privacy-options.php',
+	'editor-can-manage-privacy-options',
+	'/editor-can-manage-privacy-options\.zip/',
+	'main'
+);
 
 /**
  * Class to handle privacy options for editors
@@ -189,9 +207,9 @@ final class Editor_Privacy_Manager {
 		?>
 		<style id="editor-privacy-manager-css" data-epm="1">
 			/* Duplicate Privacy submenu handling:
-											 * Modern: hide entire LI containing the Privacy link and not first. Fallback hides anchor only.
-											 * :has() support: Chrome 105+, Safari 15.4+, Firefox (flagged) – fallback keeps UX acceptable.
-											 */
+																	 * Modern: hide entire LI containing the Privacy link and not first. Fallback hides anchor only.
+																	 * :has() support: Chrome 105+, Safari 15.4+, Firefox (flagged) – fallback keeps UX acceptable.
+																	 */
 			#adminmenu .wp-submenu li:not(.wp-first-item):has(> a[href$="options-privacy.php"]) {
 				display: none !important;
 			}
