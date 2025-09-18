@@ -11,6 +11,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Security
 - (Planned) Further hardening review
 
+## [1.2.1] - 2025-09-18
+### Changed
+- Minor metadata bump (no functional code changes)
+
+### Maintenance
+- Prepare for future automation (placeholder)
+
 ## [1.2.0] - 2025-09-18
 ### Added
 - WordPress.org compatible `readme.txt`
@@ -41,6 +48,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Adds Privacy submenu for Editors when not already exposed by core
 - Temporary request-scoped capability elevation on privacy pages
 
-[Unreleased]: https://github.com/soderlind/editor-can-manage-privacy-options/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/soderlind/editor-can-manage-privacy-options/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/soderlind/editor-can-manage-privacy-options/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/soderlind/editor-can-manage-privacy-options/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/soderlind/editor-can-manage-privacy-options/compare/v1.0.0...v1.1.1
