@@ -1,0 +1,22 @@
+{
+	"name": "soderlind/editor-can-manage-privacy-options",
+	"description": "Grants WordPress Editors the ability to manage privacy settings and access privacy admin pages",
+	"homepage": "https://github.com/soderlind/editor-can-manage-privacy-options",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"authors": [
+		{
+			"name": "Per Søderlind",
+			"email": "per@soderlind.no",
+			"homepage": "https://soderlind.no"
+		}
+	],
+	"keywords": [
+		"wordpress",
+		"wp"
+	],
+	"support": {
+		"issues": "https://github.com/soderlind/editor-can-manage-privacy-options/issues"
+	},
+	"require": {}
+}
