@@ -46,9 +46,6 @@ Yes, but users with network-level capabilities are treated as effectively admin 
 = Is this secure? =
 Yes; no permanent role modifications are stored. Adjustments are request-scoped and limited to privacy pages.
 
-== Screenshots ==
-1. Privacy menu visible for an Editor user under Settings → Privacy (not included here).
-
 == Changelog ==
 = 1.1.1 =
 * Added defensive duplicate Privacy menu cleanup
