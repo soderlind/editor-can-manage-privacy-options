@@ -51,7 +51,7 @@ add_filter( 'epm_privacy_base_cap', function( $default ) {
    ```
 
 - **Updates**
-   * Plugin updates are handled automatically via GitHub. No need to manually download and install updates.
+   * Plugin [updates are handled automatically](https://github.com/soderlind/wordpress-plugin-github-updater#readme) via GitHub. No need to manually download and install updates.
 
 ## Requirements
 - WordPress 6.5+
