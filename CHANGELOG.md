@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Changed
 - Relicensed from MIT to GPL-2.0-or-later
 - Refactored privacy logic into a testable Privacy Access Policy module behind a WordPress environment seam
-- Collapsed duplicate Privacy submenu handling into a single idempotent menu registration; removed admin CSS injection and the separate late-cleanup pass
+- Collapsed duplicate Privacy submenu handling into a single idempotent menu registration, retaining a minimal CSS rule for WordPress's render-time duplicate
 
 ### Added
 - Zero-dependency acceptance test suite for the Privacy Access Policy (`tests/acceptance-privacy-access.php`, runnable via `composer test`)

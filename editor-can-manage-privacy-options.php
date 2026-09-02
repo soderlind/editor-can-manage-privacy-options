@@ -94,6 +94,9 @@ final class Editor_Privacy_Manager {
 
 		// Guarantee exactly one Privacy entry under Settings (runs after core/other plugins).
 		add_action( 'admin_menu', [ __CLASS__, 'ensure_single_privacy_menu' ], 999 );
+
+		// Hide WordPress's render-time duplicate Privacy item (array dedup can't touch it).
+		add_action( 'admin_enqueue_scripts', [ __CLASS__, 'enqueue_admin_css' ] );
 	}
 
 	/**
@@ -182,6 +185,24 @@ final class Editor_Privacy_Manager {
 				'options-privacy.php'
 			);
 		}
+	}
+
+	/**
+	 * When Privacy is the only Settings submenu an editor can reach, WordPress
+	 * renders it twice (the wp-first-item clone plus the real item). Enqueue a
+	 * stylesheet that hides the duplicate — a render-time artifact the $submenu
+	 * array dedup cannot address.
+	 */
+	public static function enqueue_admin_css() {
+		if ( ! self::policy()->is_eligible_editor() ) {
+			return;
+		}
+		wp_enqueue_style(
+			'epm-hide-duplicate-privacy',
+			EDITOR_PRIVACY_MANAGER_URL . 'assets/css/hide-duplicate-privacy.css',
+			[],
+			EDITOR_PRIVACY_MANAGER_VERSION
+		);
 	}
 }
 

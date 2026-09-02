@@ -14,6 +14,7 @@ By default, only Administrators can configure the site's privacy policy settings
 - Maps the core `manage_privacy_options` meta capability to an Editor-level base capability (`edit_pages`, filterable)
 - Adds the Privacy submenu under **Settings** for Editors (only if core hasn’t already exposed it)
 - Guarantees exactly one "Privacy" menu entry via a single idempotent registration
+- Hides WordPress's render-time duplicate Privacy item (shown when Privacy is an editor's only Settings submenu)
 - Request‑scoped temporary elevation only on privacy-related pages
 - Avoids granting unrelated high-risk capabilities like `manage_options`
 - Heuristic admin detection (treats users with high-level caps as admins)
@@ -25,6 +26,7 @@ Hooks used:
 - `admin_menu` (priority 999) – ensures exactly one Privacy submenu entry, adding it only if core hasn’t
 - `admin_init` – sets up request-scoped access if viewing privacy pages
 - `user_has_cap` – temporarily grants `manage_options` only when core checks it on privacy pages
+- `admin_enqueue_scripts` – enqueues a small stylesheet that hides WordPress's render-time duplicate Privacy item
 
 All decisions live in a pure `Privacy_Access_Policy` module behind a `WP_Environment` seam, so the logic is testable without a running WordPress.
 
@@ -72,7 +74,7 @@ No. Only privacy-related access is facilitated.
 Yes, by mapping to a different capability using the `epm_privacy_base_cap` filter.
 
 **How are duplicate Privacy menu entries avoided?**  
-The menu is registered idempotently on a late `admin_menu` pass: if core already exposed Privacy it is left alone, otherwise it is added — guaranteeing a single entry.
+Two cases. Duplicate `$submenu` array entries are removed by an idempotent registration on a late `admin_menu` pass. Separately, when Privacy is the only Settings submenu an editor can reach, WordPress renders it twice at output time (a `wp-first-item` clone); a small CSS rule hides the duplicate.
 
 **Does it work in multisite?**  
 Yes in principle; network-level elevated capabilities mark a user as effectively admin and bypass the editor logic.

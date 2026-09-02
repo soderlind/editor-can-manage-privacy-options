@@ -18,6 +18,7 @@ By default only Administrators can manage Privacy Settings (select the Privacy P
 * Remaps `manage_privacy_options` to an Editor-level capability (`edit_pages` by default)
 * Adds the Privacy submenu under Settings only if not already exposed by core
 * Guarantees a single Privacy menu entry via one idempotent registration
+* Hides WordPress's render-time duplicate Privacy item for editors
 * Request-scoped temporary elevation only on privacy-related pages
 * Heuristic detection to treat users with high-level caps as admin-equivalent
 
@@ -45,7 +46,7 @@ No. Only the privacy-related settings/pages are made accessible.
 Yes. Use the `epm_privacy_base_cap` filter to return a different capability (e.g. `edit_others_posts`).
 
 = Why might there be a duplicate Privacy menu? =
-There isn't. The Privacy submenu is registered idempotently on a late admin_menu pass: if core already exposed it the plugin leaves it alone, otherwise it adds it — so there is always exactly one entry.
+Duplicate submenu array entries are removed by an idempotent registration on a late admin_menu pass. Separately, when Privacy is the only Settings submenu an editor can reach, WordPress renders it twice at output time; a small CSS rule hides the duplicate.
 
 = Does this work in multisite? =
 Yes, but users with network-level capabilities are treated as effectively admin and won't need the mapping.
@@ -57,7 +58,7 @@ Yes; no permanent role modifications are stored. Adjustments are request-scoped 
 = 1.3.0 =
 * Relicensed from MIT to GPLv2 or later.
 * Refactored privacy logic into a testable policy module behind a WordPress environment seam.
-* Consolidated duplicate Privacy menu prevention into one idempotent registration (removed admin CSS injection).
+* Consolidated duplicate Privacy menu prevention into one idempotent registration, retaining a minimal CSS rule for WordPress's render-time duplicate.
 * Added an acceptance test suite (`composer test`).
 * Documentation: automatic GitHub updates and correct Composer package name.
 
