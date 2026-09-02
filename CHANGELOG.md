@@ -11,6 +11,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Security
 - (Planned) Further hardening review
 
+## [1.3.1] - 2026-09-03
+### Fixed
+- Duplicate Privacy submenu shown to editors when Privacy is their only reachable Settings item (WordPress's render-time `wp-first-item` clone), now hidden via an enqueued stylesheet
+
+### Maintenance
+- README/readme wording clarifications
+
 ## [1.3.0] - 2026-09-02
 ### Changed
 - Relicensed from MIT to GPL-2.0-or-later

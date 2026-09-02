@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Editor Can Manage Privacy Options
  * Description: Grants WordPress Editors the ability to manage privacy settings and access privacy admin pages.
- * Version: 1.3.0
+ * Version: 1.3.1
  * Author: Per Søderlind
  * Author URI: https://github.com/soderlind
  * Plugin URI: https://github.com/soderlind/editor-can-manage-privacy-options
@@ -28,7 +28,7 @@ use Soderlind\EditorPrivacy\WP_Environment;
 use Soderlind\EditorPrivacy\WordPress_Environment;
 
 // Define plugin constants
-define( 'EDITOR_PRIVACY_MANAGER_VERSION', '1.3.0' );
+define( 'EDITOR_PRIVACY_MANAGER_VERSION', '1.3.1' );
 define( 'EDITOR_PRIVACY_MANAGER_URL', plugin_dir_url( __FILE__ ) );
 define( 'EDITOR_PRIVACY_MANAGER_PATH', plugin_dir_path( __FILE__ ) );
 
