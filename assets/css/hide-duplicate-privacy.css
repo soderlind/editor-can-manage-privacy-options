@@ -1,0 +1,10 @@
+/* Hide WordPress's render-time duplicate Privacy submenu item for editors.
+ * Shown when Privacy is the only Settings submenu an editor can reach: core
+ * renders a wp-first-item clone plus the real item. Keep the first, hide the rest. */
+#adminmenu .wp-submenu li:not(.wp-first-item):has(> a[href$="options-privacy.php"]) {
+	display: none !important;
+}
+
+#adminmenu .wp-submenu li:not(.wp-first-item) a[href$="options-privacy.php"] {
+	display: none !important;
+}

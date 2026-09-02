@@ -11,11 +11,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Security
 - (Planned) Further hardening review
 
+## [1.3.1] - 2026-09-03
+### Fixed
+- Duplicate Privacy submenu shown to editors when Privacy is their only reachable Settings item (WordPress's render-time `wp-first-item` clone), now hidden via an enqueued stylesheet
+
+### Maintenance
+- README/readme wording clarifications
+
 ## [1.3.0] - 2026-09-02
 ### Changed
 - Relicensed from MIT to GPL-2.0-or-later
 - Refactored privacy logic into a testable Privacy Access Policy module behind a WordPress environment seam
-- Collapsed duplicate Privacy submenu handling into a single idempotent menu registration; removed admin CSS injection and the separate late-cleanup pass
+- Collapsed duplicate Privacy submenu handling into a single idempotent menu registration, retaining a minimal CSS rule for WordPress's render-time duplicate
 
 ### Added
 - Zero-dependency acceptance test suite for the Privacy Access Policy (`tests/acceptance-privacy-access.php`, runnable via `composer test`)
