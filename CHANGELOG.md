@@ -11,6 +11,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Security
 - (Planned) Further hardening review
 
+## [1.3.0] - 2026-09-02
+### Changed
+- Relicensed from MIT to GPL-2.0-or-later
+- Refactored privacy logic into a testable Privacy Access Policy module behind a WordPress environment seam
+- Collapsed duplicate Privacy submenu handling into a single idempotent menu registration; removed admin CSS injection and the separate late-cleanup pass
+
+### Added
+- Zero-dependency acceptance test suite for the Privacy Access Policy (`tests/acceptance-privacy-access.php`, runnable via `composer test`)
+
+### Maintenance
+- Documented automatic GitHub updates and corrected the Composer package name in README
+
 ## [1.2.1] - 2025-09-18
 ### Changed
 - Minor metadata bump (no functional code changes)
