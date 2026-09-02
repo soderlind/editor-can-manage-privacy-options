@@ -17,7 +17,7 @@ By default only Administrators can manage Privacy Settings (select the Privacy P
 **Key Features**
 * Remaps `manage_privacy_options` to an Editor-level capability (`edit_pages` by default)
 * Adds the Privacy submenu under Settings only if not already exposed by core
-* Prevents duplicate Privacy menu entries (CSS + late cleanup)
+* Guarantees a single Privacy menu entry via one idempotent registration
 * Request-scoped temporary elevation only on privacy-related pages
 * Heuristic detection to treat users with high-level caps as admin-equivalent
 
@@ -44,8 +44,8 @@ No. Only the privacy-related settings/pages are made accessible.
 = Can I change which role gets access? =
 Yes. Use the `epm_privacy_base_cap` filter to return a different capability (e.g. `edit_others_posts`).
 
-= Why do you inject CSS in the admin? =
-In rare edge cases both core and the plugin attempt to show the Privacy submenu. CSS (plus a late cleanup pass) prevents duplicate entries, ensuring a clean menu.
+= Why might there be a duplicate Privacy menu? =
+There isn't. The Privacy submenu is registered idempotently on a late admin_menu pass: if core already exposed it the plugin leaves it alone, otherwise it adds it — so there is always exactly one entry.
 
 = Does this work in multisite? =
 Yes, but users with network-level capabilities are treated as effectively admin and won't need the mapping.
