@@ -3,11 +3,11 @@ Contributors: PerS
 Donate link: https://paypal.me/PerSoderlind
 Tags: privacy, capabilities, editor, roles, permissions
 Requires at least: 6.5
-Tested up to: 6.8
+Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.2.1
-License: MIT
-License URI: https://opensource.org/licenses/MIT
+Stable tag: 1.3.0
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Grant Editors controlled access to WordPress Privacy Settings without giving them full administrator privileges.
 
@@ -54,6 +54,13 @@ Yes, but users with network-level capabilities are treated as effectively admin 
 Yes; no permanent role modifications are stored. Adjustments are request-scoped and limited to privacy pages.
 
 == Changelog ==
+= 1.3.0 =
+* Relicensed from MIT to GPLv2 or later.
+* Refactored privacy logic into a testable policy module behind a WordPress environment seam.
+* Consolidated duplicate Privacy menu prevention into one idempotent registration (removed admin CSS injection).
+* Added an acceptance test suite (`composer test`).
+* Documentation: automatic GitHub updates and correct Composer package name.
+
 = 1.2.1 =
 * Version bump only, no functional changes.
 
@@ -73,6 +80,9 @@ Yes; no permanent role modifications are stored. Adjustments are request-scoped 
 * Initial release adding Editor access to Privacy Settings via capability remap
 
 == Upgrade Notice ==
+= 1.3.0 =
+Internal refactor with the same behavior, plus an acceptance test suite. Safe update.
+
 = 1.2.1 =
 No functional changes; safe to skip unless you need the normalized version reference.
 
@@ -93,4 +103,4 @@ add_filter( 'epm_privacy_base_cap', function( $default ) {
 ```
 
 == License ==
-MIT — see LICENSE file.
+GPLv2 or later — see LICENSE file.

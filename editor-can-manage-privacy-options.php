@@ -2,17 +2,17 @@
 /**
  * Plugin Name: Editor Can Manage Privacy Options
  * Description: Grants WordPress Editors the ability to manage privacy settings and access privacy admin pages.
- * Version: 1.2.1
+ * Version: 1.3.0
  * Author: Per Søderlind
  * Author URI: https://github.com/soderlind
  * Plugin URI: https://github.com/soderlind/editor-can-manage-privacy-options
  * Text Domain: editor-can-manage-privacy-options
  * Domain Path: /languages
  * Requires at least: 6.5
- * Tested up to: 6.8
+ * Tested up to: 7.1
  * Requires PHP: 8.2
- * License: MIT
- * License URI: https://opensource.org/licenses/MIT
+ * License: GPL-2.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
  * This plugin extends the WordPress Editor role to include privacy management capabilities,
  * which are typically reserved for Administrators only.
@@ -23,8 +23,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use Soderlind\EditorPrivacy\Privacy_Access_Policy;
+use Soderlind\EditorPrivacy\WP_Environment;
+use Soderlind\EditorPrivacy\WordPress_Environment;
+
 // Define plugin constants
-define( 'EDITOR_PRIVACY_MANAGER_VERSION', '1.2.1' );
+define( 'EDITOR_PRIVACY_MANAGER_VERSION', '1.3.0' );
 define( 'EDITOR_PRIVACY_MANAGER_URL', plugin_dir_url( __FILE__ ) );
 define( 'EDITOR_PRIVACY_MANAGER_PATH', plugin_dir_path( __FILE__ ) );
 
@@ -34,6 +38,10 @@ require_once EDITOR_PRIVACY_MANAGER_PATH . 'vendor/autoload.php';
 if ( ! class_exists( 'Soderlind\WordPress\GitHub_Plugin_Updater' ) ) {
 	require_once EDITOR_PRIVACY_MANAGER_PATH . 'class-github-plugin-updater.php';
 }
+
+// Privacy access policy and its WordPress environment seam.
+require_once EDITOR_PRIVACY_MANAGER_PATH . 'class-privacy-environment.php';
+require_once EDITOR_PRIVACY_MANAGER_PATH . 'class-privacy-access-policy.php';
 // Initialize the updater with configuration.
 $editor_privacy_manager_updater = \Soderlind\WordPress\GitHub_Plugin_Updater::create_with_assets(
 	'https://github.com/soderlind/editor-can-manage-privacy-options',
@@ -44,7 +52,11 @@ $editor_privacy_manager_updater = \Soderlind\WordPress\GitHub_Plugin_Updater::cr
 );
 
 /**
- * Class to handle privacy options for editors
+ * Wires WordPress hooks to the Privacy Access Policy.
+ *
+ * This class is the adapter layer: each method is a thin translation between a
+ * WordPress hook and a policy decision. All decisions live in
+ * {@see \Soderlind\EditorPrivacy\Privacy_Access_Policy}.
  */
 final class Editor_Privacy_Manager {
 
@@ -55,76 +67,62 @@ final class Editor_Privacy_Manager {
 	const BASE_PRIVACY_CAP = 'edit_pages';
 
 	/**
-	 * Initialize the plugin
+	 * @var Privacy_Access_Policy|null
 	 */
-	public static function init() {
-		// Load translations.
-		add_action( 'plugins_loaded', [ __CLASS__, 'load_textdomain' ] );
-		// Map privacy capability to editors
-		add_filter( 'map_meta_cap', [ __CLASS__, 'grant_privacy_capability' ], 10, 4 );
-
-		// Add privacy menu for editors
-		add_action( 'admin_menu', [ __CLASS__, 'add_privacy_menu_for_editors' ] );
-
-		// Grant temporary access to privacy pages
-		add_action( 'admin_init', [ __CLASS__, 'allow_editor_access_to_privacy_pages' ] );
-
-		// Inject CSS to hide duplicate Privacy submenu (when core + custom both appear)
-		add_action( 'admin_head', [ __CLASS__, 'hide_duplicate_privacy_menu_css' ] );
-		// Additional fallbacks in case admin_head timing conflicts or is stripped.
-		add_action( 'admin_print_styles', [ __CLASS__, 'hide_duplicate_privacy_menu_css' ] );
-		add_action( 'in_admin_footer', [ __CLASS__, 'hide_duplicate_privacy_menu_css' ] );
-
-		// Late cleanup to physically remove duplicates if they still exist.
-		add_action( 'admin_menu', [ __CLASS__, 'cleanup_duplicate_privacy_menu' ], 999 );
-	}
+	private static $policy = null;
 
 	/**
-	 * Map the 'manage_privacy_options' capability to 'edit_pages' (Editor level)
-	 * instead of 'manage_options' (Administrator level)
+	 * @var WP_Environment|null
+	 */
+	private static $env = null;
+
+	/**
+	 * Initialize the plugin.
 	 *
-	 * @param string[] $caps    Array of capabilities required
-	 * @param string   $cap     The capability being checked
-	 * @param int      $user_id The user ID being checked
-	 * @param array    $args    Additional arguments
-	 * @return string[] Modified array of required capabilities
+	 * @param WP_Environment|null $env Optional environment override (tests inject a fake).
 	 */
-	public static function grant_privacy_capability( $caps, $cap, $user_id, $args ) {
-		if ( 'manage_privacy_options' === $cap ) {
-			$mapped = apply_filters( 'epm_privacy_base_cap', self::BASE_PRIVACY_CAP );
-			return [ $mapped ];
-		}
-		return $caps;
+	public static function init( ?WP_Environment $env = null ) {
+		self::$env = $env ?? new WordPress_Environment();
+
+		add_action( 'plugins_loaded', [ __CLASS__, 'load_textdomain' ] );
+
+		// Remap the privacy meta capability to an editor-level capability.
+		add_filter( 'map_meta_cap', [ __CLASS__, 'map_meta_cap' ], 10, 2 );
+
+		// Grant temporary manage_options access while on a privacy page.
+		add_action( 'admin_init', [ __CLASS__, 'maybe_elevate_on_privacy_page' ] );
+
+		// Guarantee exactly one Privacy entry under Settings (runs after core/other plugins).
+		add_action( 'admin_menu', [ __CLASS__, 'ensure_single_privacy_menu' ], 999 );
 	}
 
 	/**
-	 * Add Privacy menu item under Settings for Editors
-	 * This ensures editors can see and access the privacy settings page
+	 * Lazily build the policy so the base-cap filter reflects late registrations.
 	 */
-	public static function add_privacy_menu_for_editors() {
-		// Only add menu for users who are editors but not administrators
-		if ( ! self::is_editor_not_admin() ) {
-			return;
+	private static function policy(): Privacy_Access_Policy {
+		if ( null === self::$policy ) {
+			self::$policy = new Privacy_Access_Policy( self::$env ?? new WordPress_Environment() );
 		}
+		return self::$policy;
+	}
 
-		// If core already exposed the Privacy page (due to capability remap) do not add a duplicate.
-		global $submenu;
-		if ( isset( $submenu[ 'options-general.php' ] ) ) {
-			foreach ( $submenu[ 'options-general.php' ] as $item ) {
-				// $item structure: [0] => Title, [1] => Capability, [2] => Slug
-				if ( isset( $item[ 2 ] ) && 'options-privacy.php' === $item[ 2 ] ) {
-					return; // Already present, skip adding second entry
-				}
-			}
-		}
+	/**
+	 * Resolve the (filterable) editor-level base capability.
+	 */
+	private static function base_cap(): string {
+		return (string) apply_filters( 'epm_privacy_base_cap', self::BASE_PRIVACY_CAP );
+	}
 
-		// Add privacy submenu under Settings
-		add_options_page(
-			__( 'Privacy Settings', 'editor-can-manage-privacy-options' ), // Page title
-			__( 'Privacy', 'editor-can-manage-privacy-options' ),          // Menu title
-			self::BASE_PRIVACY_CAP,                                        // Required capability (mapped capability)
-			'options-privacy.php'                                         // Menu slug (links to core privacy page)
-		);
+	/**
+	 * map_meta_cap adapter: delegate the remap decision to the policy.
+	 *
+	 * @param string[] $caps Array of capabilities required.
+	 * @param string   $cap  The capability being checked.
+	 * @return string[] Modified array of required capabilities.
+	 */
+	public static function map_meta_cap( $caps, $cap ) {
+		$mapped = self::policy()->map_privacy_meta_cap( $cap, self::base_cap() );
+		return null === $mapped ? $caps : $mapped;
 	}
 
 	/**
@@ -135,118 +133,54 @@ final class Editor_Privacy_Manager {
 	}
 
 	/**
-	 * Grant temporary access to privacy-related admin pages for editors
-	 * This handles the actual page access when editors navigate to privacy settings
+	 * admin_init adapter: attach the temporary elevation only when the policy allows it.
 	 */
-	public static function allow_editor_access_to_privacy_pages() {
-		// Check if we're on a privacy-related page
-		if ( ! self::is_privacy_page() ) {
-			return;
+	public static function maybe_elevate_on_privacy_page() {
+		if ( self::policy()->should_elevate_on_privacy_page() ) {
+			add_filter( 'user_has_cap', [ __CLASS__, 'grant_manage_options' ], 10, 2 );
 		}
-
-		// Check if current user is an editor (but not admin)
-		if ( ! self::is_editor_not_admin() ) {
-			return;
-		}
-
-		// Temporarily grant manage_options capability for this request only
-		add_filter( 'user_has_cap', [ __CLASS__, 'temporarily_grant_admin_cap' ], 10, 4 );
 	}
 
 	/**
-	 * Temporarily grant manage_options capability to editors on privacy pages
+	 * user_has_cap adapter: grant manage_options for this request when required.
 	 *
-	 * @param array  $allcaps All capabilities of the user
-	 * @param array  $caps    Required capabilities being checked
-	 * @param array  $args    Additional arguments
-	 * @param object $user    The user object
-	 * @return array Modified capabilities array
+	 * @param array $allcaps All capabilities of the user.
+	 * @param array $caps    Required capabilities being checked.
+	 * @return array Modified capabilities array.
 	 */
-	public static function temporarily_grant_admin_cap( $allcaps, $caps, $args, $user ) {
-		// Only grant if checking for manage_options capability
-		if ( in_array( 'manage_options', $caps, true ) ) {
+	public static function grant_manage_options( $allcaps, $caps ) {
+		if ( self::policy()->requires_manage_options( $caps ) ) {
 			$allcaps[ 'manage_options' ] = true;
 		}
-
 		return $allcaps;
 	}
 
 	/**
-	 * Check if current user is an editor but not an administrator (legacy heuristic)
-	 *
-	 * @return bool True if user is editor-level but not admin
+	 * admin_menu adapter: execute the policy's plan so Settings holds exactly one Privacy entry.
 	 */
-	private static function is_editor_not_admin() {
-
-		// Treat as admin if user has any high-level capability (avoid relying on manage_options).
-		$admin_like_caps = [ 'activate_plugins', 'install_plugins', 'update_core', 'delete_users', 'promote_users', 'manage_network', 'manage_network_options' ];
-		foreach ( $admin_like_caps as $cap_name ) {
-			if ( current_user_can( $cap_name ) ) {
-				return false; // User is effectively admin-level.
-			}
-		}
-		// Editor-level inference: can edit others' content.
-		return ( current_user_can( 'edit_others_posts' ) || current_user_can( 'edit_others_pages' ) );
-	}
-
-	/**
-	 * Check if we're currently on a privacy-related admin page
-	 *
-	 * @return bool True if on privacy page
-	 */
-	private static function is_privacy_page() {
-		global $pagenow;
-		return in_array( $pagenow, [ 'options-privacy.php', 'privacy-policy-guide.php' ], true );
-	}
-
-	/**
-	 * Output CSS that hides duplicate Privacy submenu entries (those without the wp-first-item class).
-	 */
-	public static function hide_duplicate_privacy_menu_css() {
-		if ( ! self::is_editor_not_admin() ) {
+	public static function ensure_single_privacy_menu() {
+		if ( ! self::policy()->is_eligible_editor() ) {
 			return;
 		}
-		?>
-		<style id="editor-privacy-manager-css" data-epm="1">
-			/* Duplicate Privacy submenu handling:
-																							 * Modern: hide entire LI containing the Privacy link and not first. Fallback hides anchor only.
-																							 * :has() support: Chrome 105+, Safari 15.4+, Firefox (flagged) – fallback keeps UX acceptable.
-																							 */
-			#adminmenu .wp-submenu li:not(.wp-first-item):has(> a[href$="options-privacy.php"]) {
-				display: none !important;
-			}
 
-			#adminmenu .wp-submenu li:not(.wp-first-item) a[href$="options-privacy.php"] {
-				display: none !important;
-			}
-		</style>
-		<?php
-	}
-
-	/**
-	 * Late physical duplicate removal (defensive). If more than one options-privacy.php entry exists, keep first.
-	 */
-	public static function cleanup_duplicate_privacy_menu() {
-		if ( ! self::is_editor_not_admin() ) {
-			return;
-		}
 		global $submenu;
-		if ( empty( $submenu[ 'options-general.php' ] ) ) {
-			return;
-		}
-		$found = false;
-		foreach ( $submenu[ 'options-general.php' ] as $index => $item ) {
-			if ( isset( $item[ 2 ] ) && 'options-privacy.php' === $item[ 2 ] ) {
-				if ( ! $found ) {
-					$found = true; // Keep first occurrence
-					continue;
-				}
+		$items = isset( $submenu[ 'options-general.php' ] ) ? $submenu[ 'options-general.php' ] : [];
+		$plan  = self::policy()->privacy_menu_plan( $items );
+
+		if ( ! empty( $plan[ 'remove_indexes' ] ) ) {
+			foreach ( $plan[ 'remove_indexes' ] as $index ) {
 				unset( $submenu[ 'options-general.php' ][ $index ] );
 			}
-		}
-		// Reindex to avoid gaps.
-		if ( $found ) {
 			$submenu[ 'options-general.php' ] = array_values( $submenu[ 'options-general.php' ] );
+		}
+
+		if ( $plan[ 'add' ] ) {
+			add_options_page(
+				__( 'Privacy Settings', 'editor-can-manage-privacy-options' ),
+				__( 'Privacy', 'editor-can-manage-privacy-options' ),
+				self::base_cap(),
+				'options-privacy.php'
+			);
 		}
 	}
 }

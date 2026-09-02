@@ -80,7 +80,7 @@ Yes in principle; network-level elevated capabilities mark a user as effectively
 Pull requests and issues welcome.
 
 ## License
-MIT — see `LICENSE` file.
+GPL-2.0-or-later — see `LICENSE` file.
 
 ## Author
 [Per Søderlind](https://github.com/soderlind)
